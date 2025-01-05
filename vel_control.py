@@ -12,8 +12,9 @@ def main():
     # 閉ループ制御の開始
     ax0.start_closed_loop_control()
 
-    # 速度制御（平滑化あり）の開始
-    ax0.set_ramped_velocity_control_mode(ramp_rate=8)
+    # 速度制御の開始
+    # ax0.set_velocity_control_mode()                     # 平滑化なし
+    ax0.set_ramped_velocity_control_mode(ramp_rate=10)  # 平滑化あり
 
     # 動作テスト
     try:

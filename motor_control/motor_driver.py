@@ -35,7 +35,8 @@ class MotorDriver:
     def set_velocity_control_mode(self):
         # 速度制御モードに設定
         self.axis.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
-        print("Velocity control mode set.")
+        self.axis.controller.config.input_mode = INPUT_MODE_PASSTHROUGH
+        print("velocity control mode set.")
 
     def set_ramped_velocity_control_mode(self, ramp_rate=8.0):
         # 速度制御（速度変化平滑化あり）モードに設定
