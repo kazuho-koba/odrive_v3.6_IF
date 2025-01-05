@@ -18,7 +18,15 @@ def main():
     # 動作テスト
     try:
         print("Running motors...")
-        ax0.set_velocity(2)  # axis0: 速度2rps
+        ax0.set_velocity(10)  # axis0: 速度2rps
+
+        time.sleep(5)  # 5秒間動作
+
+        ax0.set_velocity(0)  # 停止
+
+        time.sleep(1)  # 5秒間動作
+
+        ax0.set_velocity(-10)  # axis0: 速度-2rps
 
         time.sleep(5)  # 5秒間動作
 
