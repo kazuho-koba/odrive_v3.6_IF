@@ -26,6 +26,9 @@ class MotorDriver:
         print("the supplied voltage is:" +
               str(self.odrive.vbus_voltage) + "[V]")
 
+        # エラー解除
+        self.odrive.clear_errors()
+
     def start_closed_loop_control(self):
         # 閉ループ制御を開始する
         self.axis.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
@@ -54,3 +57,14 @@ class MotorDriver:
         # 速度設定メソッド
         self.axis.controller.input_vel = velocity
         print(f"Velocity set to {velocity} round/sec.")
+
+    def set_torque_control_mode(self, kv=130, ramp_rate=10):
+        # トルク制御モードに設定
+        self.axis.controller.config.control_mode = CONTROL_MODE_TORQUE_CONTROL
+        self.axis.motor.config.torque_constant = 8.23 / kv
+        self.axis.controller.config.input_mode = INPUT_MODE_TORQUE_RAMP
+        self.axis.controller.config.torque_ramp_rate = ramp_rate
+
+    def set_torque(self, torque):
+        # トルク制御メソッド
+        self.axis.controller.input_torque = torque
