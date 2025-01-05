@@ -78,6 +78,50 @@ class MotorDriver:
         self.axis.controller.config.vel_integrator_gain = 0.32
         self.axis.controller.config.vel_integrator_limit = 1
 
+    def set_vel_by_torque_mode(self, kv=130, ramp_rate=10, torque_lim=2):
+        # トルクベース速度制御モードに設定（Odriveのモードとしてはトルク制御モード）
+        self.axis.controller.config.control_mode = CONTROL_MODE_TORQUE_CONTROL
+        self.axis.motor.config.torque_constant = 8.23 / kv
+        self.axis.motor.config.torque_lim = torque_lim
+        self.axis.controller.config.input_mode = INPUT_MODE_TORQUE_RAMP
+        self.axis.controller.config.torque_ramp_rate = ramp_rate
+        self.axis.controller.config.pos_gain = 20
+        self.axis.controller.config.vel_gain = 0.3
+        self.axis.controller.config.vel_integrator_gain = 0.32
+        self.axis.controller.config.vel_integrator_limit = 1
+
+    def set_vel_by_torque(self, target_vel, last_vel, err_integ, last_torque_cmd, motor_current, dt):
+        # トルク制御で目標速度[rps]を出す制御
+        CURRENT_LIMIT = 15       # [Amps]
+        VEL_ERR_INTEG_MAX = 0.1  # [N]
+        torque_cmd = 0
+
+        # ゲイン設定
+        kp = 0.1
+        kd = 0.01
+        ki = 1
+
+        # PID制御
+        current_vel = self.axis.encoder.vel_estimate    # 現在速度[rps]
+        vel_err = target_vel - current_vel              # 速度誤差
+        vel_diff = current_vel - last_vel               # 速度変化量
+        err_integ += vel_err*dt                         # 速度誤差蓄積量
+        err_integ = max(err_integ, VEL_ERR_INTEG_MAX)   # 速度誤差の上限キャップ掛け
+        torque_cmd = kp*vel_err - kd*vel_diff + ki * err_integ
+
+        # モータ電流が既に高いのに更に高いトルクを出そうとしているなら、それ以上出さない
+        if abs(motor_current) > CURRENT_LIMIT:
+            if last_torque_cmd > torque_cmd and torque_cmd < 0 and last_torque_cmd < 0:
+                torque_cmd = last_torque_cmd
+            elif torque_cmd > last_torque_cmd and torque_cmd > 0 and last_torque_cmd > 0:
+                torque_cmd = last_torque_cmd
+
+        # トルク入力
+        self.set_torque(torque_cmd)
+
+        # 返り値
+        return torque_cmd, current_vel, err_integ
+
     def set_torque(self, torque):
         # トルク制御メソッド
         self.axis.controller.input_torque = torque
