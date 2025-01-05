@@ -58,10 +58,11 @@ class MotorDriver:
         self.axis.controller.input_vel = velocity
         print(f"Velocity set to {velocity} round/sec.")
 
-    def set_torque_control_mode(self, kv=130, ramp_rate=10):
+    def set_torque_control_mode(self, kv=130, ramp_rate=10, torque_lim=1.5):
         # トルク制御モードに設定
         self.axis.controller.config.control_mode = CONTROL_MODE_TORQUE_CONTROL
         self.axis.motor.config.torque_constant = 8.23 / kv
+        self.axis.motor.config.torque_lim = torque_lim
         self.axis.controller.config.input_mode = INPUT_MODE_TORQUE_RAMP
         self.axis.controller.config.torque_ramp_rate = ramp_rate
 

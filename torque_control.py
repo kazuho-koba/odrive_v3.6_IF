@@ -13,7 +13,7 @@ def main():
     ax0.start_closed_loop_control()
 
     # トルク制御モードの開始
-    ax0.set_torque_control_mode(kv=130, ramp_rate=10)
+    ax0.set_torque_control_mode(kv=130, ramp_rate=10, torque_lim=1.5)
 
     # 動作テスト
     try:
