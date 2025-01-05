@@ -20,8 +20,9 @@ def main():
     try:
         print("Running motors...")
         ax0.set_velocity(10)  # axis0: 速度2rps
-
-        time.sleep(5)  # 5秒間動作
+        time.sleep(2)  # 5秒間動作
+        ax0.get_velocity()
+        time.sleep(3)
 
         ax0.set_velocity(0)  # 停止
 
@@ -35,6 +36,9 @@ def main():
 
     except KeyboardInterrupt:
         print("Interrupted by user.")
+    finally:
+        # 例外の有無に関わらずモータを停止する
+        ax0.set_velocity(0)
 
 
 if __name__ == "__main__":

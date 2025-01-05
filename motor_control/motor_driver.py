@@ -45,6 +45,11 @@ class MotorDriver:
         self.axis.controller.config.input_mode = INPUT_MODE_VEL_RAMP
         print("ramped velocity control mode set.")
 
+    def get_velocity(self):
+        # 速度を取得する
+        vel = self.axis.encoder.vel_estimate
+        print(str(vel*60) + "[rpm]")
+
     def set_velocity(self, velocity):
         # 速度設定メソッド
         self.axis.controller.input_vel = velocity
