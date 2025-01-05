@@ -40,9 +40,9 @@ class MotorDriver:
         self.axis.controller.config.control_mode = CONTROL_MODE_VELOCITY_CONTROL
         self.axis.controller.config.input_mode = INPUT_MODE_PASSTHROUGH
         self.axis.controller.config.pos_gain = 20
-        self.axis.controller.config.vel_gain = 0.2
+        self.axis.controller.config.vel_gain = 0.3
         self.axis.controller.config.vel_integrator_gain = 0.32
-        self.axis.controller.config.vel_integrator_limit = 0.5
+        self.axis.controller.config.vel_integrator_limit = 1
         print("velocity control mode set.")
 
     def set_ramped_velocity_control_mode(self, ramp_rate=8.0):
@@ -51,9 +51,9 @@ class MotorDriver:
         self.axis.controller.config.vel_ramp_rate = ramp_rate
         self.axis.controller.config.input_mode = INPUT_MODE_VEL_RAMP
         self.axis.controller.config.pos_gain = 20
-        self.axis.controller.config.vel_gain = 0.2
+        self.axis.controller.config.vel_gain = 0.3
         self.axis.controller.config.vel_integrator_gain = 0.32
-        self.axis.controller.config.vel_integrator_limit = 0.5
+        self.axis.controller.config.vel_integrator_limit = 1
         print("ramped velocity control mode set.")
 
     def get_velocity(self):
@@ -74,10 +74,14 @@ class MotorDriver:
         self.axis.controller.config.input_mode = INPUT_MODE_TORQUE_RAMP
         self.axis.controller.config.torque_ramp_rate = ramp_rate
         self.axis.controller.config.pos_gain = 20
-        self.axis.controller.config.vel_gain = 0.2
+        self.axis.controller.config.vel_gain = 0.3
         self.axis.controller.config.vel_integrator_gain = 0.32
-        self.axis.controller.config.vel_integrator_limit = 0.5
+        self.axis.controller.config.vel_integrator_limit = 1
 
     def set_torque(self, torque):
         # トルク制御メソッド
         self.axis.controller.input_torque = torque
+
+    def set_idle(self):
+        # モータを脱力状態にする
+        self.axis.requested_state = AXIS_STATE_IDLE

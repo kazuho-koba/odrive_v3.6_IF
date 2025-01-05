@@ -38,7 +38,8 @@ def main():
         print("Interrupted by user.")
     finally:
         # 例外の有無に関わらずモータを停止する
-        ax0.set_velocity(0)
+        ax0.set_idle()
+        # ax0.set_velocity(0)
 
 
 if __name__ == "__main__":
