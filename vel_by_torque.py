@@ -35,7 +35,7 @@ def main():
             last_time = time.time()
             motorcurrent_ave = ax0.get_motorcurrent_ave(motorcurrent_ave)
             last_torque_cmd, last_vel, err_integ = ax0.set_vel_by_torque(target_vel, last_vel, err_integ, last_torque_cmd, motorcurrent_ave, dt)
-            print("averaged motor current:" + str(motorcurrent_ave) + "[A],  motor velocity:" + str(last_vel) + "[rps],  set torque:" + str(last_torque_cmd) + "[Nm]")
+            print("averaged motor current:" + str(motorcurrent_ave) + "[A],  motor velocity:" + str(last_vel) + "[rps],  set torque:" + str(last_torque_cmd) + "[Nm] with: " + str(1/dt) + "[Hz]")
 
         start_time = time.time()
         while time.time() - start_time < 2:
@@ -43,7 +43,7 @@ def main():
             dt = time.time()-last_time
             last_time = time.time()
             last_torque_cmd, last_vel, err_integ = ax0.set_vel_by_torque(target_vel, last_vel, err_integ, last_torque_cmd, motorcurrent_ave, dt)
-            print("averaged motor current:" + str(motorcurrent_ave) + "[A],  motor velocity:" + str(last_vel) + "[rps],  set torque:" + str(last_torque_cmd) + "[Nm]")
+            print("averaged motor current:" + str(motorcurrent_ave) + "[A],  motor velocity:" + str(last_vel) + "[rps],  set torque:" + str(last_torque_cmd) + "[Nm] with: " + str(1/dt) + "[Hz]")
 
     except KeyboardInterrupt:
         print("Interrupted by user.")
