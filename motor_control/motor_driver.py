@@ -111,6 +111,7 @@ class MotorDriver:
 
         # モータ電流が既に高いのに更に高いトルクを出そうとしているなら、それ以上出さない
         if abs(motor_current) > CURRENT_LIMIT:
+            print("violation to the additional current limit has been detected!")
             if last_torque_cmd > torque_cmd and torque_cmd < 0 and last_torque_cmd < 0:
                 torque_cmd = last_torque_cmd
             elif torque_cmd > last_torque_cmd and torque_cmd > 0 and last_torque_cmd > 0:
@@ -126,6 +127,13 @@ class MotorDriver:
         # トルク制御メソッド
         self.axis.controller.input_torque = torque
 
-    def set_idle(self):
+    def set_idle(self): 
         # モータを脱力状態にする
         self.axis.requested_state = AXIS_STATE_IDLE
+
+    def get_motorcurrent_ave(self, current_ave):
+        # モータドライバの電流を取得する（ノイズが多いため指数移動平均を取る
+        ALPHA = 0.2
+        current = self.axis.motor.current_control.Iq_measured
+        current_ave = ALPHA*current + (1-ALPHA)*current_ave
+        return current_ave
