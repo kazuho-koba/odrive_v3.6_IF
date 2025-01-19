@@ -93,6 +93,7 @@ class MotorDriver:
     def set_vel_by_torque(self, target_vel, last_vel, err_integ, last_torque_cmd, motor_current, dt):
         # トルク制御で目標速度[rps]を出す制御
         CURRENT_LIMIT = 20       # [Amps]
+        VEL_LIMIT = 40          # [rps]
         VEL_ERR_INTEG_MAX = 2  # [N]
         torque_cmd = 0
 
