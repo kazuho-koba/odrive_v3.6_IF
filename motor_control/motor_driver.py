@@ -92,21 +92,25 @@ class MotorDriver:
 
     def set_vel_by_torque(self, target_vel, last_vel, err_integ, last_torque_cmd, motor_current, dt):
         # トルク制御で目標速度[rps]を出す制御
-        CURRENT_LIMIT = 15       # [Amps]
-        VEL_ERR_INTEG_MAX = 0.1  # [N]
+        CURRENT_LIMIT = 20       # [Amps]
+        VEL_ERR_INTEG_MAX = 2  # [N]
         torque_cmd = 0
 
         # ゲイン設定
-        kp = 0.1
-        kd = 0.01
-        ki = 1
+        kp = 0.22
+        kd = 0.6
+        ki = 1.5
 
         # PID制御
         current_vel = self.axis.encoder.vel_estimate    # 現在速度[rps]
         vel_err = target_vel - current_vel              # 速度誤差
         vel_diff = current_vel - last_vel               # 速度変化量
         err_integ += vel_err*dt                         # 速度誤差蓄積量
-        err_integ = max(err_integ, VEL_ERR_INTEG_MAX)   # 速度誤差の上限キャップ掛け
+        if err_integ > 0:
+            err_integ = min(err_integ, VEL_ERR_INTEG_MAX)   # 速度誤差の上限キャップ掛け
+        else:
+            err_integ = max(err_integ, -1*VEL_ERR_INTEG_MAX)
+        print(err_integ)
         torque_cmd = kp*vel_err - kd*vel_diff + ki * err_integ
 
         # モータ電流が既に高いのに更に高いトルクを出そうとしているなら、それ以上出さない
@@ -116,6 +120,7 @@ class MotorDriver:
                 torque_cmd = last_torque_cmd
             elif torque_cmd > last_torque_cmd and torque_cmd > 0 and last_torque_cmd > 0:
                 torque_cmd = last_torque_cmd
+            self.odrive.clear_errors()
 
         # トルク入力
         self.set_torque(torque_cmd)
@@ -127,13 +132,13 @@ class MotorDriver:
         # トルク制御メソッド
         self.axis.controller.input_torque = torque
 
-    def set_idle(self): 
+    def set_idle(self):
         # モータを脱力状態にする
         self.axis.requested_state = AXIS_STATE_IDLE
 
     def get_motorcurrent_ave(self, current_ave):
         # モータドライバの電流を取得する（ノイズが多いため指数移動平均を取る
-        ALPHA = 0.2
+        ALPHA = 0.05
         current = self.axis.motor.current_control.Iq_measured
         current_ave = ALPHA*current + (1-ALPHA)*current_ave
         return current_ave
